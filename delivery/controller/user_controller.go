@@ -110,6 +110,22 @@ func (c *UserController) Update(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, userRes)
 }
 
+func (c *UserController) Delete(ctx *gin.Context) {
+	id, err := security.GetIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = c.userUsecase.Delete(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+}
+
 func NewUserController(router *gin.Engine, userUsecase usecase.UserUsecase) *UserController {
 	controller := &UserController{
 		Router:      router,
@@ -120,6 +136,7 @@ func NewUserController(router *gin.Engine, userUsecase usecase.UserUsecase) *Use
 	roterGroup.POST("/register", controller.Register)
 	roterGroup.POST("/login", controller.Login)
 	roterGroup.PUT("/:id", middleware.AuthMiddleware(), controller.Update)
+	roterGroup.DELETE("/", middleware.AuthMiddleware(), controller.Delete)
 
 	return controller
 }

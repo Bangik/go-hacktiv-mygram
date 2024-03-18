@@ -13,6 +13,7 @@ type UserUsecase interface {
 	Register(user model.User) (model.RegisterResponse, error)
 	Login(user model.Login) (string, error)
 	Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error)
+	Delete(id int) error
 	CheckEmailExists(email string) error
 	CheckUsernameExists(username string) error
 	FindById(id int) (model.User, error)
@@ -59,6 +60,10 @@ func (u *userUsecase) Login(user model.Login) (string, error) {
 
 func (u *userUsecase) Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error) {
 	return u.repository.Update(user)
+}
+
+func (u *userUsecase) Delete(id int) error {
+	return u.repository.Delete(id)
 }
 
 func (u *userUsecase) CheckEmailExists(email string) error {

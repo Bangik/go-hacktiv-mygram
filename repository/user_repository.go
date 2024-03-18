@@ -10,6 +10,7 @@ import (
 type UserRepository interface {
 	Register(user model.User) (model.RegisterResponse, error)
 	Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error)
+	Delete(id int) error
 	CheckEmailExists(email string) error
 	CheckUsernameExists(username string) error
 	FindByEmail(email string) (model.User, error)
@@ -60,6 +61,19 @@ func (u *userRepository) Update(user model.UpdateUserResquest) (model.UpdateUser
 
 	tx.Commit()
 	return updateUserResponse, nil
+}
+
+func (u *userRepository) Delete(id int) error {
+	var user model.User
+	tx := u.db.Begin()
+	err := tx.Where("id = ?", id).Delete(&user).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
 }
 
 func (u *userRepository) CheckEmailExists(email string) error {
