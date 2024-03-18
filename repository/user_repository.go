@@ -9,10 +9,11 @@ import (
 
 type UserRepository interface {
 	Register(user model.User) (model.RegisterResponse, error)
-	Login(user model.User) (model.User, error)
+	Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error)
 	CheckEmailExists(email string) error
 	CheckUsernameExists(username string) error
 	FindByEmail(email string) (model.User, error)
+	FindById(id int) (model.User, error)
 }
 
 type userRepository struct {
@@ -39,8 +40,26 @@ func (u *userRepository) Register(user model.User) (model.RegisterResponse, erro
 	return registerResponse, nil
 }
 
-func (u *userRepository) Login(user model.User) (model.User, error) {
-	panic("unimplemented")
+func (u *userRepository) Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error) {
+	var updateUserResponse model.UpdateUserResponse
+	var userModel model.User
+	tx := u.db.Begin()
+	err := tx.Model(&userModel).Where("id = ?", user.ID).Updates(&user).Error
+	if err != nil {
+		tx.Rollback()
+		return updateUserResponse, err
+	}
+
+	updateUserResponse = model.UpdateUserResponse{
+		ID:       user.ID,
+		Email:    user.Email,
+		Username: user.Username,
+		Age:      user.Age,
+		UpdateAt: user.UpdatedAt,
+	}
+
+	tx.Commit()
+	return updateUserResponse, nil
 }
 
 func (u *userRepository) CheckEmailExists(email string) error {
@@ -68,6 +87,16 @@ func (u *userRepository) CheckUsernameExists(username string) error {
 func (u *userRepository) FindByEmail(email string) (model.User, error) {
 	var user model.User
 	err := u.db.Where("email = ?", email).First(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
+func (u *userRepository) FindById(id int) (model.User, error) {
+	var user model.User
+	err := u.db.Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return user, err
 	}

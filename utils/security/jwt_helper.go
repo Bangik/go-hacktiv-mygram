@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hacktiv-assignment-final/config"
 	"hacktiv-assignment-final/model"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -59,14 +60,19 @@ func VerifyAccessToken(tokenString string) (jwt.MapClaims, error) {
 	return claims, nil
 }
 
-func GetIdFromToken(c *gin.Context) (string, error) {
+func GetIdFromToken(c *gin.Context) (int, error) {
 	claims, ok := c.Get("claims")
 	if !ok {
-		return "", fmt.Errorf("failed to get id from token")
+		return 0, fmt.Errorf("failed to get id from token")
 	}
 
 	claimsMap := claims.(jwt.MapClaims)
-	id := claimsMap["id"].(string)
+	fmt.Println(claimsMap)
+	ids := claimsMap["id"].(float64)
+	id, err := strconv.Atoi(fmt.Sprintf("%.0f", ids))
+	if err != nil {
+		return 0, fmt.Errorf("failed to get id from token")
+	}
 
 	return id, nil
 }

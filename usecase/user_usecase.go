@@ -12,8 +12,10 @@ import (
 type UserUsecase interface {
 	Register(user model.User) (model.RegisterResponse, error)
 	Login(user model.Login) (string, error)
+	Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error)
 	CheckEmailExists(email string) error
 	CheckUsernameExists(username string) error
+	FindById(id int) (model.User, error)
 }
 
 type userUsecase struct {
@@ -53,7 +55,10 @@ func (u *userUsecase) Login(user model.Login) (string, error) {
 	}
 
 	return token, nil
+}
 
+func (u *userUsecase) Update(user model.UpdateUserResquest) (model.UpdateUserResponse, error) {
+	return u.repository.Update(user)
 }
 
 func (u *userUsecase) CheckEmailExists(email string) error {
@@ -62,6 +67,10 @@ func (u *userUsecase) CheckEmailExists(email string) error {
 
 func (u *userUsecase) CheckUsernameExists(username string) error {
 	return u.repository.CheckUsernameExists(username)
+}
+
+func (u *userUsecase) FindById(id int) (model.User, error) {
+	return u.repository.FindById(id)
 }
 
 func NewUserUsecase(repository repository.UserRepository) UserUsecase {

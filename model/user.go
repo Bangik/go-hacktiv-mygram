@@ -25,3 +25,19 @@ type RegisterResponse struct {
 	Username string `json:"username"`
 	Age      int    `json:"age"`
 }
+
+type UpdateUserResquest struct {
+	ID        int       `json:"id"`
+	Username  string    `json:"username" binding:"required"`
+	Email     string    `json:"email" binding:"required,email"`
+	Age       int       `json:"age" binding:"required"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type UpdateUserResponse struct {
+	ID       int       `json:"id"`
+	Email    string    `json:"email"`
+	Username string    `json:"username"`
+	Age      int       `json:"age"`
+	UpdateAt time.Time `json:"updated_at"`
+}
