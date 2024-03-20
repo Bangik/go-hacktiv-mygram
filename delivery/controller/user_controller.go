@@ -17,7 +17,8 @@ type UserController struct {
 }
 
 func (c *UserController) Register(ctx *gin.Context) {
-	var register model.User
+	var register model.Register
+	var userRegister model.User
 	err := ctx.ShouldBindJSON(&register)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -41,7 +42,12 @@ func (c *UserController) Register(ctx *gin.Context) {
 		return
 	}
 
-	user, err := c.userUsecase.Register(register)
+	userRegister.Username = register.Username
+	userRegister.Email = register.Email
+	userRegister.Password = register.Password
+	userRegister.Age = register.Age
+
+	user, err := c.userUsecase.Register(userRegister)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

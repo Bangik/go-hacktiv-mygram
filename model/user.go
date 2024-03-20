@@ -19,6 +19,13 @@ type Login struct {
 	Password string `binding:"required,min=6" json:"password"`
 }
 
+type Register struct {
+	Username string `binding:"required" json:"username"`
+	Email    string `binding:"required,email" json:"email"`
+	Password string `binding:"required,min=6" json:"password"`
+	Age      int    `binding:"required" json:"age"`
+}
+
 type RegisterResponse struct {
 	ID       int    `json:"id"`
 	Email    string `json:"email"`
