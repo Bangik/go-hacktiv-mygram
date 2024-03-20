@@ -79,7 +79,6 @@ func (u *userRepository) Delete(id int) error {
 func (u *userRepository) CheckEmailExists(email string) error {
 	var user model.User
 	err := u.db.Where("email = ?", email).First(&user).Error
-	fmt.Println(err)
 	if err != nil {
 		return nil
 	}
@@ -90,7 +89,6 @@ func (u *userRepository) CheckEmailExists(email string) error {
 func (u *userRepository) CheckUsernameExists(username string) error {
 	var user model.User
 	err := u.db.Where("username = ?", username).First(&user).Error
-	fmt.Println(err)
 	if err != nil {
 		return nil
 	}

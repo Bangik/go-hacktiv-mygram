@@ -18,6 +18,7 @@ type appServer struct {
 
 func (a *appServer) initController() {
 	controller.NewUserController(a.engine, a.usecaseManager.UserUsecase())
+	controller.NewPhotoController(a.engine, a.usecaseManager.PhotoUsecase())
 }
 
 func (a *appServer) Run() {

@@ -67,7 +67,7 @@ func GetIdFromToken(c *gin.Context) (int, error) {
 	}
 
 	claimsMap := claims.(jwt.MapClaims)
-	fmt.Println(claimsMap)
+
 	ids := claimsMap["id"].(float64)
 	id, err := strconv.Atoi(fmt.Sprintf("%.0f", ids))
 	if err != nil {
