@@ -18,8 +18,9 @@ type PhotoController struct {
 
 func (c *PhotoController) Create(ctx *gin.Context) {
 	var photo model.Photo
-	var photoResponse model.CreatePhotoRequest
-	err := ctx.ShouldBindJSON(&photo)
+	var photoRequest model.CreatePhotoRequest
+	var photoResponse model.CreatePhotoResponse
+	err := ctx.ShouldBindJSON(&photoRequest)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -32,6 +33,9 @@ func (c *PhotoController) Create(ctx *gin.Context) {
 	}
 
 	photo.UserId = userId
+	photo.Title = photoRequest.Title
+	photo.Caption = photoRequest.Caption
+	photo.PhotoUrl = photoRequest.PhotoUrl
 
 	photoResponse, err = c.photoUsecase.Create(photo)
 	if err != nil {

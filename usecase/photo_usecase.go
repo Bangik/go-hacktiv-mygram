@@ -6,7 +6,7 @@ import (
 )
 
 type PhotoUsecase interface {
-	Create(photo model.Photo) (model.CreatePhotoRequest, error)
+	Create(photo model.Photo) (model.CreatePhotoResponse, error)
 	FindAll(idUser int) ([]model.Photo, error)
 	FindById(id int) (model.Photo, error)
 	Update(photo model.Photo) (model.UpdatePhotoRequest, error)
@@ -17,7 +17,7 @@ type photoUsecase struct {
 	repository repository.PhotoRepository
 }
 
-func (p *photoUsecase) Create(photo model.Photo) (model.CreatePhotoRequest, error) {
+func (p *photoUsecase) Create(photo model.Photo) (model.CreatePhotoResponse, error) {
 	return p.repository.Create(photo)
 }
 

@@ -7,7 +7,7 @@ import (
 )
 
 type PhotoRepository interface {
-	Create(photo model.Photo) (model.CreatePhotoRequest, error)
+	Create(photo model.Photo) (model.CreatePhotoResponse, error)
 	FindAll(idUser int) ([]model.Photo, error)
 	FindById(id int) (model.Photo, error)
 	Update(photo model.Photo) (model.UpdatePhotoRequest, error)
@@ -18,9 +18,9 @@ type photoRepository struct {
 	db *gorm.DB
 }
 
-func (p *photoRepository) Create(photo model.Photo) (model.CreatePhotoRequest, error) {
+func (p *photoRepository) Create(photo model.Photo) (model.CreatePhotoResponse, error) {
 	err := p.db.Create(&photo).Error
-	createPhotoRequest := model.CreatePhotoRequest{
+	createPhotoRequest := model.CreatePhotoResponse{
 		ID:        photo.ID,
 		Title:     photo.Title,
 		Caption:   photo.Caption,

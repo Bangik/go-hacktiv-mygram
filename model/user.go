@@ -53,3 +53,9 @@ type UserPhotosResponse struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 }
+
+type UserCommentsResponse struct {
+	ID       int    `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}
