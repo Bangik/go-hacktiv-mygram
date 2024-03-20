@@ -25,6 +25,7 @@ services:
       APP_TOKEN_NAME: '${APP_TOKEN_NAME}'
       APP_TOKEN_KEY: '${APP_TOKEN_KEY}'
       APP_TOKEN_EXPIRE: '${APP_TOKEN_EXPIRE}'
+      GIN_MODE: '${GIN_MODE}'
     depends_on:
       - db
 
