@@ -7,6 +7,7 @@ import (
 	"hacktiv-assignment-final/utils/security"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -101,6 +102,7 @@ func (c *UserController) Update(ctx *gin.Context) {
 	}
 
 	user.ID = id
+	user.UpdatedAt = time.Now()
 	err = ctx.ShouldBindJSON(&user)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -120,6 +122,12 @@ func (c *UserController) Delete(ctx *gin.Context) {
 	id, err := security.GetIdFromToken(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	_, err = c.userUsecase.FindById(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 		return
 	}
 
