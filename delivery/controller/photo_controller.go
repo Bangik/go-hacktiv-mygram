@@ -47,13 +47,7 @@ func (c *PhotoController) Create(ctx *gin.Context) {
 }
 
 func (c *PhotoController) FindAll(ctx *gin.Context) {
-	userId, err := security.GetIdFromToken(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
-		return
-	}
-
-	photos, err := c.photoUsecase.FindAll(userId)
+	photos, err := c.photoUsecase.FindAll()
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -81,7 +75,7 @@ func (c *PhotoController) FindAll(ctx *gin.Context) {
 
 func (c *PhotoController) Update(ctx *gin.Context) {
 	var photo model.Photo
-	var photoResponse model.UpdatePhotoRequest
+	var photoResponse model.UpdatePhotoResponse
 	idParam := ctx.Param("photoId")
 
 	id, err := strconv.Atoi(idParam)

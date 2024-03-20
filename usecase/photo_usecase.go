@@ -7,9 +7,9 @@ import (
 
 type PhotoUsecase interface {
 	Create(photo model.Photo) (model.CreatePhotoResponse, error)
-	FindAll(idUser int) ([]model.Photo, error)
+	FindAll() ([]model.Photo, error)
 	FindById(id int) (model.Photo, error)
-	Update(photo model.Photo) (model.UpdatePhotoRequest, error)
+	Update(photo model.Photo) (model.UpdatePhotoResponse, error)
 	Delete(id int) error
 }
 
@@ -21,15 +21,15 @@ func (p *photoUsecase) Create(photo model.Photo) (model.CreatePhotoResponse, err
 	return p.repository.Create(photo)
 }
 
-func (p *photoUsecase) FindAll(idUser int) ([]model.Photo, error) {
-	return p.repository.FindAll(idUser)
+func (p *photoUsecase) FindAll() ([]model.Photo, error) {
+	return p.repository.FindAll()
 }
 
 func (p *photoUsecase) FindById(id int) (model.Photo, error) {
 	return p.repository.FindById(id)
 }
 
-func (p *photoUsecase) Update(photo model.Photo) (model.UpdatePhotoRequest, error) {
+func (p *photoUsecase) Update(photo model.Photo) (model.UpdatePhotoResponse, error) {
 	return p.repository.Update(photo)
 }
 

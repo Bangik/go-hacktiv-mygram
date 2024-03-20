@@ -8,9 +8,9 @@ import (
 
 type PhotoRepository interface {
 	Create(photo model.Photo) (model.CreatePhotoResponse, error)
-	FindAll(idUser int) ([]model.Photo, error)
+	FindAll() ([]model.Photo, error)
 	FindById(id int) (model.Photo, error)
-	Update(photo model.Photo) (model.UpdatePhotoRequest, error)
+	Update(photo model.Photo) (model.UpdatePhotoResponse, error)
 	Delete(id int) error
 }
 
@@ -32,9 +32,9 @@ func (p *photoRepository) Create(photo model.Photo) (model.CreatePhotoResponse, 
 	return createPhotoRequest, err
 }
 
-func (p *photoRepository) FindAll(idUser int) ([]model.Photo, error) {
+func (p *photoRepository) FindAll() ([]model.Photo, error) {
 	var photos []model.Photo
-	err := p.db.Preload("User").Where("user_id = ?", idUser).Find(&photos).Error
+	err := p.db.Preload("User").Find(&photos).Error
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +51,9 @@ func (p *photoRepository) FindById(id int) (model.Photo, error) {
 	return photo, nil
 }
 
-func (p *photoRepository) Update(photo model.Photo) (model.UpdatePhotoRequest, error) {
+func (p *photoRepository) Update(photo model.Photo) (model.UpdatePhotoResponse, error) {
 	err := p.db.Save(&photo).Error
-	createPhotoRequest := model.UpdatePhotoRequest{
+	createPhotoRequest := model.UpdatePhotoResponse{
 		ID:        photo.ID,
 		Title:     photo.Title,
 		Caption:   photo.Caption,
