@@ -8,6 +8,9 @@ import (
 type PhotoUsecase interface {
 	Create(photo model.Photo) (model.CreatePhotoRequest, error)
 	FindAll(idUser int) ([]model.Photo, error)
+	FindById(id int) (model.Photo, error)
+	Update(photo model.Photo) (model.UpdatePhotoRequest, error)
+	Delete(id int) error
 }
 
 type photoUsecase struct {
@@ -20,6 +23,18 @@ func (p *photoUsecase) Create(photo model.Photo) (model.CreatePhotoRequest, erro
 
 func (p *photoUsecase) FindAll(idUser int) ([]model.Photo, error) {
 	return p.repository.FindAll(idUser)
+}
+
+func (p *photoUsecase) FindById(id int) (model.Photo, error) {
+	return p.repository.FindById(id)
+}
+
+func (p *photoUsecase) Update(photo model.Photo) (model.UpdatePhotoRequest, error) {
+	return p.repository.Update(photo)
+}
+
+func (p *photoUsecase) Delete(id int) error {
+	return p.repository.Delete(id)
 }
 
 func NewPhotoUsecase(repository repository.PhotoRepository) PhotoUsecase {

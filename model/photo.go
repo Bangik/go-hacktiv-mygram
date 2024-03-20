@@ -22,6 +22,15 @@ type CreatePhotoRequest struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type UpdatePhotoRequest struct {
+	ID        int       `json:"id"`
+	Title     string    `json:"title"`
+	Caption   string    `json:"caption"`
+	PhotoUrl  string    `json:"photo_url"`
+	UserId    int       `json:"user_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type PhotosResponse struct {
 	ID        int                `json:"id"`
 	Title     string             `json:"title"`

@@ -6,6 +6,7 @@ import (
 	"hacktiv-assignment-final/usecase"
 	"hacktiv-assignment-final/utils/security"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -74,6 +75,86 @@ func (c *PhotoController) FindAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, PhotosResponse)
 }
 
+func (c *PhotoController) Update(ctx *gin.Context) {
+	var photo model.Photo
+	var photoResponse model.UpdatePhotoRequest
+	idParam := ctx.Param("photoId")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	findPhoto, err := c.photoUsecase.FindById(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "photo not found"})
+		return
+	}
+
+	userId, err := security.GetIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if userId != findPhoto.UserId {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to update this photo"})
+		return
+	}
+
+	photo.ID = id
+	photo.UserId = userId
+	err = ctx.ShouldBindJSON(&photo)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	photoResponse, err = c.photoUsecase.Update(photo)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, photoResponse)
+}
+
+func (c *PhotoController) Delete(ctx *gin.Context) {
+	idParam := ctx.Param("photoId")
+
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	findPhoto, err := c.photoUsecase.FindById(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "photo not found"})
+		return
+	}
+
+	userId, err := security.GetIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if userId != findPhoto.UserId {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to delete this photo"})
+		return
+	}
+
+	err = c.photoUsecase.Delete(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Your photo has been successfully deleted"})
+}
+
 func NewPhotoController(router *gin.Engine, photoUsecase usecase.PhotoUsecase) {
 	controller := PhotoController{
 		Router:       router,
@@ -83,4 +164,6 @@ func NewPhotoController(router *gin.Engine, photoUsecase usecase.PhotoUsecase) {
 	roterGroup := router.Group("/photos")
 	roterGroup.POST("/", middleware.AuthMiddleware(), controller.Create)
 	roterGroup.GET("/", middleware.AuthMiddleware(), controller.FindAll)
+	roterGroup.PUT("/:photoId", middleware.AuthMiddleware(), controller.Update)
+	roterGroup.DELETE("/:photoId", middleware.AuthMiddleware(), controller.Delete)
 }
