@@ -137,7 +137,7 @@ func (c *UserController) Delete(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, gin.H{"message": "user deleted"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Your account has been successfully deleted"})
 }
 
 func NewUserController(router *gin.Engine, userUsecase usecase.UserUsecase) *UserController {
