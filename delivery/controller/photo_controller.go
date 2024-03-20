@@ -159,9 +159,9 @@ func NewPhotoController(router *gin.Engine, photoUsecase usecase.PhotoUsecase) {
 		photoUsecase: photoUsecase,
 	}
 
-	roterGroup := router.Group("/photos")
-	roterGroup.POST("/", middleware.AuthMiddleware(), controller.Create)
-	roterGroup.GET("/", middleware.AuthMiddleware(), controller.FindAll)
-	roterGroup.PUT("/:photoId", middleware.AuthMiddleware(), controller.Update)
-	roterGroup.DELETE("/:photoId", middleware.AuthMiddleware(), controller.Delete)
+	roterGroup := router.Group("/photos", middleware.AuthMiddleware())
+	roterGroup.POST("/", controller.Create)
+	roterGroup.GET("/", controller.FindAll)
+	roterGroup.PUT("/:photoId", controller.Update)
+	roterGroup.DELETE("/:photoId", controller.Delete)
 }

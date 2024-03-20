@@ -176,9 +176,9 @@ func NewCommentController(router *gin.Engine, commentUsecase usecase.CommentUsec
 		photoUsecase:   photoUsecase,
 	}
 
-	routerGroup := router.Group("/comments")
-	routerGroup.POST("/", middleware.AuthMiddleware(), controller.Create)
-	routerGroup.GET("/", middleware.AuthMiddleware(), controller.FindAll)
-	routerGroup.PUT("/:commentId", middleware.AuthMiddleware(), controller.Update)
-	routerGroup.DELETE("/:commentId", middleware.AuthMiddleware(), controller.Delete)
+	routerGroup := router.Group("/comments", middleware.AuthMiddleware())
+	routerGroup.POST("/", controller.Create)
+	routerGroup.GET("/", controller.FindAll)
+	routerGroup.PUT("/:commentId", controller.Update)
+	routerGroup.DELETE("/:commentId", controller.Delete)
 }
