@@ -6,6 +6,7 @@ import (
 	"hacktiv-assignment-final/usecase"
 	"hacktiv-assignment-final/utils/security"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -85,6 +86,89 @@ func (c *CommentController) FindAll(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, commentsResponse)
 }
 
+func (c *CommentController) Update(ctx *gin.Context) {
+	var comment model.Comment
+	var commentRequest model.UpdateCommentRequest
+	var commentResponse model.UpdateCommentResponse
+
+	commentId := ctx.Param("commentId")
+	id, err := strconv.Atoi(commentId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	findComment, err := c.commentUsecase.FindById(id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "comment not found"})
+		return
+	}
+
+	userId, err := security.GetIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if userId != findComment.UserId {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to update this comment"})
+		return
+	}
+
+	err = ctx.ShouldBindJSON(&commentRequest)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	comment.ID = id
+	comment.UserId = userId
+	comment.Message = commentRequest.Message
+	comment.PhotoId = findComment.PhotoId
+
+	commentResponse, err = c.commentUsecase.Update(comment)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, commentResponse)
+}
+
+func (c *CommentController) Delete(ctx *gin.Context) {
+	commentId := ctx.Param("commentId")
+	id, err := strconv.Atoi(commentId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	findComment, err := c.commentUsecase.FindById(id)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "comment not found"})
+		return
+	}
+
+	userId, err := security.GetIdFromToken(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	if userId != findComment.UserId {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to delete this comment"})
+		return
+	}
+
+	err = c.commentUsecase.Delete(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Your comment has been successfully deleted"})
+}
+
 func NewCommentController(router *gin.Engine, commentUsecase usecase.CommentUsecase, photoUsecase usecase.PhotoUsecase) {
 	controller := CommentController{
 		Router:         router,
@@ -95,4 +179,6 @@ func NewCommentController(router *gin.Engine, commentUsecase usecase.CommentUsec
 	routerGroup := router.Group("/comments")
 	routerGroup.POST("/", middleware.AuthMiddleware(), controller.Create)
 	routerGroup.GET("/", middleware.AuthMiddleware(), controller.FindAll)
+	routerGroup.PUT("/:commentId", middleware.AuthMiddleware(), controller.Update)
+	routerGroup.DELETE("/:commentId", middleware.AuthMiddleware(), controller.Delete)
 }

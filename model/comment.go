@@ -26,6 +26,18 @@ type CreateCommentResponse struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
+type UpdateCommentRequest struct {
+	Message string `json:"message" binding:"required,max=255"`
+}
+
+type UpdateCommentResponse struct {
+	ID        int       `json:"id"`
+	UserId    int       `json:"user_id"`
+	PhotoId   int       `json:"photo_id"`
+	Message   string    `json:"message"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
 type CommentsResponse struct {
 	ID        int                   `json:"id"`
 	UserId    int                   `json:"user_id"`
