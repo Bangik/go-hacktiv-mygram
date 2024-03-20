@@ -6,6 +6,7 @@ type UseCaseManager interface {
 	UserUsecase() usecase.UserUsecase
 	PhotoUsecase() usecase.PhotoUsecase
 	CommnetUsecase() usecase.CommentUsecase
+	SocialMediaUsecase() usecase.SocialMediaUsecase
 }
 
 type useCaseManager struct {
@@ -22,6 +23,10 @@ func (u *useCaseManager) PhotoUsecase() usecase.PhotoUsecase {
 
 func (u *useCaseManager) CommnetUsecase() usecase.CommentUsecase {
 	return usecase.NewCommentUsecase(u.repoManager.CommentRepo())
+}
+
+func (u *useCaseManager) SocialMediaUsecase() usecase.SocialMediaUsecase {
+	return usecase.NewSocialMediaUsecase(u.repoManager.SocialMediaRepo())
 }
 
 func NewUseCaseManager(repo RepoManager) UseCaseManager {

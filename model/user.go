@@ -59,3 +59,8 @@ type UserCommentsResponse struct {
 	Email    string `json:"email"`
 	Username string `json:"username"`
 }
+
+type UserSocialMediasResponse struct {
+	ID       int    `json:"id"`
+	Username string `json:"username"`
+}

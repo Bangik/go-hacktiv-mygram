@@ -6,6 +6,7 @@ type RepoManager interface {
 	UserRepo() repository.UserRepository
 	PhotoRepo() repository.PhotoRepository
 	CommentRepo() repository.CommentRepository
+	SocialMediaRepo() repository.SocialMediaRepository
 }
 
 type repoManager struct {
@@ -22,6 +23,10 @@ func (r *repoManager) PhotoRepo() repository.PhotoRepository {
 
 func (r *repoManager) CommentRepo() repository.CommentRepository {
 	return repository.NewCommentRepository(r.infra.Connection())
+}
+
+func (r *repoManager) SocialMediaRepo() repository.SocialMediaRepository {
+	return repository.NewSocialMediaRepository(r.infra.Connection())
 }
 
 func NewRepoManager(infraParam InfraManager) RepoManager {
