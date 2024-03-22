@@ -6,7 +6,6 @@ import (
 	"hacktiv-assignment-final/usecase"
 	"hacktiv-assignment-final/utils/security"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -76,19 +75,6 @@ func (c *UserController) Login(ctx *gin.Context) {
 
 func (c *UserController) Update(ctx *gin.Context) {
 	var user model.UpdateUserResquest
-	idParam := ctx.Param("id")
-
-	id, err := strconv.Atoi(idParam)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
-		return
-	}
-
-	_, err = c.userUsecase.FindById(id)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
-		return
-	}
 
 	userId, err := security.GetIdFromToken(ctx)
 	if err != nil {
@@ -96,12 +82,13 @@ func (c *UserController) Update(ctx *gin.Context) {
 		return
 	}
 
-	if userId != id {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "You are not authorized to update this user"})
+	_, err = c.userUsecase.FindById(userId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "user not found"})
 		return
 	}
 
-	user.ID = id
+	user.ID = userId
 	user.UpdatedAt = time.Now()
 	err = ctx.ShouldBindJSON(&user)
 	if err != nil {
@@ -149,7 +136,7 @@ func NewUserController(router *gin.Engine, userUsecase usecase.UserUsecase) *Use
 	roterGroup := router.Group("/users")
 	roterGroup.POST("/register", controller.Register)
 	roterGroup.POST("/login", controller.Login)
-	roterGroup.PUT("/:id", middleware.AuthMiddleware(), controller.Update)
+	roterGroup.PUT("/", middleware.AuthMiddleware(), controller.Update)
 	roterGroup.DELETE("/", middleware.AuthMiddleware(), controller.Delete)
 
 	return controller
